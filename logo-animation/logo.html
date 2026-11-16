@@ -1,0 +1,39 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#fff}svg{display:block;width:100vw;height:100vh}</style></head>
+<body>
+<svg id="s" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" preserveAspectRatio="xMidYMid meet">
+  <defs><clipPath id="triClip"><rect id="triRect" x="530" y="460" width="0" height="200"/></clipPath></defs>
+  <g id="logo" fill="none" stroke-linecap="butt">
+    <!-- construction lines -->
+    <path class="d" data-a="0.00" data-b="0.70" d="M383 355 L892 585" stroke="#404040" stroke-width="6"/>
+    <path class="d" data-a="0.15" data-b="0.85" d="M380 683 L793 683" stroke="#404040" stroke-width="5"/>
+    <path class="d" data-a="0.30" data-b="0.95" d="M497 290 L497 683" stroke="#7e5c5b" stroke-width="7"/>
+    <path class="d" data-a="0.45" data-b="1.10" d="M539 741 L539 430" stroke="#c18779" stroke-width="7"/>
+    <path class="d" data-a="0.60" data-b="1.15" d="M380 405 L545 482" stroke="#5b464d" stroke-width="5"/>
+    <path class="d" data-a="0.70" data-b="1.20" d="M383 640 L545 640" stroke="#5b464d" stroke-width="5"/>
+    <!-- set square -->
+    <path id="tri" clip-path="url(#triClip)" fill="#5b464d" fill-rule="evenodd"
+      d="M540 474 L918 645 L540 645 Z M583 540 L735 606 L583 606 Z"/>
+    <!-- house -->
+    <path class="d" data-a="1.45" data-b="2.05" d="M138 493 L352 390" stroke="#283f2f" stroke-width="57" stroke-linecap="round"/>
+    <path class="d" data-a="1.80" data-b="2.75" d="M203 470 L203 657 L355 657 L355 576" stroke="#283f2f" stroke-width="57" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
+<script>
+const ease=t=>t<=0?0:t>=1?1:1-Math.pow(1-t,3);
+const els=[...document.querySelectorAll('.d')].map(e=>{const L=e.getTotalLength();e.style.strokeDasharray=L+' '+(L+200);return{e,L,a:+e.dataset.a,b:+e.dataset.b,round:e.getAttribute('stroke-linecap')==='round'}});
+const rect=document.getElementById('triRect');
+window.setT=function(t){
+  for(const o of els){const p=ease((t-o.a)/(o.b-o.a));
+    o.e.style.strokeDashoffset=o.L*(1-p);
+    o.e.style.visibility=p<=0.001?'hidden':'visible';}
+  const p=ease((t-1.0)/(1.6-1.0)); rect.setAttribute('width',400*p);
+};
+const m=new URLSearchParams(location.search);
+if(m.has('vb')) document.getElementById('s').setAttribute('viewBox',m.get('vb'));
+if(m.has('scale')){const k=+m.get('scale');document.getElementById('logo').setAttribute('transform',`translate(${514*(1-k)} ${515*(1-k)}) scale(${k})`);}
+if(m.has('t')) setT(+m.get('t'));
+else {const T=+(m.get('loop')||5); let st=performance.now(); (function f(n){setT(((n-st)/1000)%T); requestAnimationFrame(f)})(st);}
+</script>
+</body></html>
